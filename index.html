@@ -18,9 +18,13 @@
 <body>
 <div class="wall"></div>
 <div id="loader" role="status" aria-label="Loading">
+ <div class="ld-light"></div>
+ <div class="ld-fog f1"></div><div class="ld-fog f2"></div>
+ <div class="ld-eyes" id="eyes"></div>
+ <div class="ld-embers" id="embers"></div>
  <div class="ld">
-  <img src="logo.png" alt="BANKSTR">
-  <div class="lbar"><i id="lfill"></i><span>Loading BANKSTR -&nbsp;<b id="lp">0</b>%</span></div>
+  <div class="ld-pfp"><img src="pfp.png" alt="BANKSTR"></div>
+  <div class="ld-bar"><i id="lfill"></i></div>
  </div>
 </div>
 
@@ -29,6 +33,7 @@
  <nav class="links" id="links"><a href="#top">Hall</a><a href="#grails">Grails</a><a href="#bank">Bank</a><a href="#how">How</a><a href="#rules">Rules</a><a href="#faq">FAQ</a></nav>
  <div class="nav-r">
   <a class="icon-btn" data-x href="#" target="_blank" rel="noopener" aria-label="BANKSTR on X"><svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.3 8.3L23 22h-6.6l-5.1-6.7L5.4 22H2.3l7.8-8.9L1.5 2h6.8l4.6 6.1L18.9 2Zm-1.2 18h1.8L7.4 3.9H5.5L17.7 20Z"/></svg></a>
+  <button class="btn sm wbtn" id="walletBtn">Connect wallet</button>
   <a class="btn gold sm" data-buy href="#" target="_blank" rel="noopener">Buy $BANKSTR</a>
   <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
  </div>
@@ -38,9 +43,6 @@
 <!-- HALL (live 3D) -->
 <section class="hero" id="top">
  <canvas id="hall" aria-label="The BANKSTR hall"></canvas>
- <div class="hero-ui">
-  <div class="hero-b"><a class="btn gold" href="#grails">See the grails</a><a class="btn" href="#bank">Open the bank</a></div>
- </div>
  <div class="tip" id="tip"></div>
  <div class="hint" id="hint">Click anyone in the hall to talk</div>
  <div class="dlg" id="dlg" role="dialog" aria-live="polite">
@@ -155,9 +157,25 @@
  <img class="f-logo" src="logo-sm.png" alt="BANKSTR">
  <p class="f-tag">Nothing leaves the bank.</p>
  <div class="f-links"><a href="#grails">Grails</a><a href="#bank">Bank</a><a href="#how">How</a><a href="#" data-x target="_blank" rel="noopener">X ↗</a><a href="#top">Top ↑</a></div>
- <p class="disc">BANKSTR is an unofficial community collecting project. Not affiliated with or endorsed by Jagex. RuneScape and Old School RuneScape are trademarks of Jagex Ltd. All artwork here is original. Prices from the OSRS Wiki real-time prices API. The bank is a collection: it doesn't back the token, can't be redeemed and is never handed out. Not financial advice.</p>
 </footer>
 
+<div class="modal" id="wModal" role="dialog" aria-label="Connect a wallet">
+ <div class="rs mbox">
+  <div class="rs-title">Connect a wallet<button class="x" id="wClose" aria-label="Close">✕</button></div>
+  <div class="w-list">
+   <button class="wopt" data-w="phantom"><svg viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#AB9FF2"/><path d="M8 20.5C8 13.6 12.4 9 17.8 9 23.2 9 27 13.2 27 18.4v5.1c0 .9-.7 1.5-1.5 1.5-.6 0-1-.4-1.3-.9l-.6-1.2c-.3-.6-1.1-.6-1.4 0l-.7 1.3c-.5.9-1.8.9-2.3 0l-.7-1.3c-.3-.6-1.1-.6-1.4 0l-.6 1.1c-.5.9-1.8 1-2.3.1-.3-.5-.4-1.1-.9-1.4-.8-.5-2.3-.4-3.3-.4C8.6 22.3 8 21.6 8 20.5Z" fill="#fff"/><circle cx="16" cy="16.5" r="1.5" fill="#AB9FF2"/><circle cx="21" cy="16.5" r="1.5" fill="#AB9FF2"/></svg>Phantom<small id="stPh">DETECTING</small></button>
+   <button class="wopt" data-w="solflare"><svg viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#1a1a1a"/><circle cx="17" cy="17" r="7" fill="#FFC10B"/><g stroke="#FC7227" stroke-width="2.4" stroke-linecap="round"><path d="M17 4v4M17 26v4M4 17h4M26 17h4M8 8l2.8 2.8M23.2 23.2 26 26M8 26l2.8-2.8M23.2 10.8 26 8"/></g></svg>Solflare<small id="stSf">DETECTING</small></button>
+  </div>
+  <p class="mnote">Read-only. We only see your public address to show your inventory. No signing, no transactions.</p>
+ </div>
+</div>
+<aside class="inv rs" id="inv" aria-label="Inventory">
+ <div class="rs-title">Inventory<button class="x" id="invClose" aria-label="Close">✕</button></div>
+ <div class="inv-addr"><span id="invAddr"></span><b id="invWallet"></b></div>
+ <div class="inv-grid" id="invGrid"></div>
+ <div class="inv-hover" id="invHover">&nbsp;</div>
+ <div class="inv-foot"><span id="invCount">0 / 28</span><button class="btn sm" id="wRefresh">Refresh</button><button class="btn sm" id="wDisc">Disconnect</button></div>
+</aside>
 <div id="toast"></div>
 <script type="module" src="app.js"></script>
 </body>

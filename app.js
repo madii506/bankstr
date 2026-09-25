@@ -78,6 +78,9 @@ function person(o){const G=new THREE.Group();const SK=M(o.skin||0xD9A57E),TOP=M(
   if(o.hat==='hood'){const h=new THREE.Mesh(new THREE.ConeGeometry(.52,1.0,6),M(o.hatc));h.position.set(0,.22,-.1);head.add(h)}
   if(o.hat==='party'){const c=new THREE.Mesh(new THREE.ConeGeometry(.3,.62,8),M(o.hatc));c.position.y=.62;c.rotation.z=.12;head.add(c);const pom=new THREE.Mesh(new THREE.IcosahedronGeometry(.1,0),M(0xffffff));pom.position.set(-.05,.95,0);head.add(pom)}
   if(o.hat==='bandana'){const b=box(.66,.16,.6,M(o.hatc));b.position.y=.28;head.add(b)}
+  if(o.hat==='visor'){const band=box(.78,.1,.72,M(0x1f6b3a));band.position.y=.28;head.add(band);const brim=box(.62,.04,.36,new THREE.MeshLambertMaterial({color:0x2fbf5a,transparent:true,opacity:.75,flatShading:true}));brim.position.set(0,.26,.46);brim.rotation.x=.25;head.add(brim)}
+  if(o.glasses){for(const gx of[-.11,.11]){const f=new THREE.Mesh(new THREE.TorusGeometry(.07,.015,4,10),GOLDM());f.position.set(gx,.08,.36);head.add(f)}}
+  if(o.vest){const v=seg(.64,.48,.9,M(o.vest),1,.64);v.position.y=2.2;body.add(v);for(let k=0;k<3;k++){const bt=new THREE.Mesh(new THREE.IcosahedronGeometry(.04,0),GOLDM());bt.position.set(0,2.45-k*.2,.34);body.add(bt)}const tie=box(.12,.36,.04,M(0x8a1a1a));tie.position.set(0,2.62,.33);body.add(tie)}
   const rA=limb(body,.62,.16,.14,TOP,-.64,2.72,0,o.ra?.[0]??.1,o.ra?.[1]??.18);const rF=limb(rA,.6,.14,.12,TOP,0,-.62,0,o.rf?.[0]??-.35,o.rf?.[1]??0);const rH=box(.18,.2,.18,SK);rH.position.y=-.66;rF.add(rH);
   const lA=limb(body,.62,.16,.14,TOP,.64,2.72,0,o.la?.[0]??.1,o.la?.[1]??-.18);const lF=limb(lA,.6,.14,.12,TOP,0,-.62,0,o.lf?.[0]??-.35,o.lf?.[1]??0);const lH=box(.18,.2,.18,SK);lH.position.y=-.66;lF.add(lH);
   let coin=null;
@@ -102,6 +105,7 @@ const CAST=[
   {name:'Merchant Mo',o:{top:0xC8A030,top2:0x9A7A20,leg:0x3a2a1a,hat:'bandana',hatc:0xB8232A,tache:1,la:[-2.5,-.3],lf:[-.3,0],lh:'coin'},lines:['Prices? Live from the Grand Exchange, every minute.','Scroll down. The grail board is right there.']},
   {name:'The Exchange Wizard',o:{top:0x2E4AA8,top2:0x243C8C,robe:1,hat:'wizard',hatc:0x2E4AA8,beard:0xDDDDDD,hair:0xCCCCCC,rh:'staff',ra:[-.5,.2],rf:[-.6,0]},lines:['I see... three grails in your future.','Shadow, Scythe, Twisted bow. Cheapest first.']},
   {name:'The Enforcer',o:{top:0x3a3a44,top2:0x2a2a34,leg:0x2a2a30,hat:'helm',rh:'sword',ra:[-.6,.2],rf:[-1.2,0]},lines:['The bank is a collection, not a claim.','Nothing gets paid out. Nothing gets sold for holders. Rules are rules.']},
+  {name:'The Banker',banker:1,o:{top:0xECE8DC,top2:0x1c1c22,leg:0x1c1c22,vest:0x22222a,hat:'visor',tache:1,glasses:1,hair:0x8a7a6a},lines:['Welcome to the Bank of BANKSTR.','Every grail we buy gets deposited right here. I count every coin.','Nothing leaves the bank. Not on my watch.']},
   {name:'Old Grinder',o:{top:0x6B4A2A,top2:0x4E3620,leg:0x3E5A2A,hat:'party',hatc:0xD83030,rh:'pick',ra:[-.9,.25],rf:[-.9,0],belt:0x2a1a0c},lines:['Back in my day we grinded for grails.','Now the fees do the grinding. Kids these days.']}
 ];
 
@@ -137,8 +141,28 @@ function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:
   eg.setAttribute('position',new THREE.BufferAttribute(ep,3));const embers=new THREE.Points(eg,new THREE.PointsMaterial({color:0xffb040,size:.09,transparent:true,opacity:.9}));S.add(embers);
   const resetE=(e)=>{const t=torches[(Math.random()*torches.length)|0];e.x=t.x+(Math.random()-.5)*.5;e.y=9+Math.random()*.5;e.z=-5.3;e.v=.02+Math.random()*.03;e.l=1};ev.forEach(e=>{resetE(e);e.y+=Math.random()*5});
   // cast
-  const SP=[[-11.6,1.2],[-9.1,-3],[-6.6,1.8],[-4.1,-3.2],[-1.8,2.4],[1.8,2.4],[4.1,-3.2],[6.6,1.8],[9.1,-3],[11.6,1.2]];
-  const people=CAST.map((c,i)=>{const g=person(c.o);const [x,z]=SP[i];g.position.set(x,0,z);g.rotation.y=-x*.035;g.userData.i=i;g.userData.ry=-x*.035;g.userData.phase=Math.random()*6;g.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;m.userData.who=i}});S.add(g);return g});
+  const POS={'Sir Vault':[-11.6,1.2,.4],'Robin Bank':[-9.1,-3,.32],'The Bankster':[-6.6,1.8,.23],'Party Penny':[-5.4,-3.2,.19],'Mr. Fees':[-3.3,1.9,.95],'Mr. Bond':[3.3,1.9,-.95],'Merchant Mo':[5.4,-3.2,-.19],'The Exchange Wizard':[6.6,1.8,-.23],'The Enforcer':[9.1,-3,-.32],'Old Grinder':[11.6,1.2,-.4],'The Banker':[0,-1.45,0]};
+  // ---- bank booth ----
+  const booth=new THREE.Group();booth.position.set(0,0,-.2);booth.scale.setScalar(1.15);S.add(booth);const WD=M(0x55361a),WDD=M(0x3a2210),BR=new THREE.MeshLambertMaterial({color:0xC89A3A,flatShading:true});
+  const counter=box(4.6,1.55,1.1,WD);counter.position.y=.78;booth.add(counter);const top=box(4.9,.14,1.35,WDD);top.position.y=1.6;booth.add(top);
+  for(const x of[-1.55,0,1.55]){const p=box(1.3,1.1,.04,WDD);p.position.set(x,.8,.57);booth.add(p)}
+  const trim=box(4.6,.08,.04,BR);trim.position.set(0,1.42,.57);booth.add(trim);const trim2=box(4.6,.08,.04,BR);trim2.position.set(0,.12,.57);booth.add(trim2);
+  const emb=new THREE.Mesh(new THREE.CylinderGeometry(.26,.26,.06,16),BR);emb.rotation.x=Math.PI/2;emb.position.set(0,.8,.6);booth.add(emb);
+  for(const x of[-2.35,2.35]){const po=box(.14,1.9,.14,BR);po.position.set(x,2.6,.2);booth.add(po)}
+  const rail=box(4.84,.12,.14,BR);rail.position.set(0,3.55,.2);booth.add(rail);
+  for(let k=-6;k<=6;k++){if(Math.abs(k)<2)continue;const bar=new THREE.Mesh(new THREE.CylinderGeometry(.025,.025,.7,5),BR);bar.position.set(k*.34,3.2,.2);booth.add(bar)}
+  const bl=new THREE.PointLight(0xffc860,6,6,1.8);bl.position.set(0,3.4,1.8);S.add(bl);
+  // coins on the counter
+  const coinG=new THREE.CylinderGeometry(.12,.12,.04,12),coinM=GOLDM();const cy=1.69;
+  const pile=new THREE.Group();pile.position.set(-1.25,cy,-.2);booth.add(pile);const rr=rng(4);for(let k=0;k<22;k++){const c=new THREE.Mesh(coinG,coinM);c.position.set((rr()-.5)*.55,rr()*.16,(rr()-.5)*.4);c.rotation.set((rr()-.5)*.5,0,(rr()-.5)*.5);pile.add(c)}
+  const stack=[];for(let k=0;k<12;k++){const c=new THREE.Mesh(coinG,coinM);c.position.set(-.3,cy+k*.045,-.15);c.visible=false;booth.add(c);stack.push(c)}
+  const paper=box(.5,.02,.36,M(0xEDE3C8));paper.position.set(1.1,1.68,-.15);paper.rotation.y=.15;booth.add(paper);
+  const ink=box(.14,.021,.14,M(0xB8232A));ink.position.set(1.12,1.69,-.12);ink.visible=false;booth.add(ink);
+  const people=CAST.map((c,i)=>{const g=person(c.o);const [x,z,ry]=POS[c.name];g.position.set(x,0,z);if(c.banker)g.scale.setScalar(1.15);g.rotation.y=ry;g.userData.i=i;g.userData.ry=ry;g.userData.phase=Math.random()*6;g.traverse(m=>{if(m.isMesh){m.castShadow=true;m.receiveShadow=true;m.userData.who=i}});S.add(g);return g});
+  const BK=people[CAST.findIndex(c=>c.banker)];const bu=BK.userData;bu.custom=true;
+  const handCoin=new THREE.Mesh(coinG,coinM);handCoin.position.set(0,-.78,.05);handCoin.rotation.x=.3;bu.rF.add(handCoin);
+  const stamp=new THREE.Group();stamp.position.y=-.8;bu.lF.add(stamp);const sh=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.26,6),M(0x6B4520));sh.position.y=.08;stamp.add(sh);const sb=box(.2,.08,.16,M(0x8a1a1a));sb.position.y=-.08;stamp.add(sb);
+  let stackN=0,lastPh=0,stamps=0;
   // fit camera
   const fit=()=>{const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);const asp=w/h;cam.aspect=asp;
     const narrow=asp<1;const span=narrow?11:28,d=24;const hf=2*Math.atan(span/2/d);const vf=2*Math.atan(Math.tan(hf/2)/asp);cam.fov=THREE.MathUtils.radToDeg(vf);
@@ -164,7 +188,14 @@ function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:
   (function tick(){requestAnimationFrame(tick);if(!vis)return;const t=clock.getElapsedTime(),dt=Math.min(.05,clock.getDelta()||.016);
     torches.forEach((T,k)=>{if(Math.random()<.35){T.f=(T.f+1+((Math.random()*3)|0))%flameFrames.length;T.sp.material.map=flameFrames[T.f]}T.sp.scale.y=2.4+Math.random()*.25;T.glow.material.opacity=.45+Math.random()*.2;T.L.intensity=32+Math.random()*14});
     ev.forEach((e,i)=>{e.y+=e.v;e.x+=Math.sin(t*2+i)*.004;e.l-=.006;if(e.l<=0||e.y>16)resetE(e);ep[i*3]=e.x;ep[i*3+1]=e.y;ep[i*3+2]=e.z});eg.attributes.position.needsUpdate=true;
-    people.forEach((p,i)=>{const u=p.userData;const ph=u.phase;u.body.position.y=Math.sin(t*1.6+ph)*.035;
+    {const P=1.5,ph=(t%P)/P;const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;let rz,fx;
+      if(ph<.35){const k=ease(ph/.35);rz=.05+k*.32;fx=-.55-k*.35}else if(ph<.45){rz=.37;fx=-.9-Math.sin((ph-.35)/.1*Math.PI)*.15}else if(ph<.8){const k=ease((ph-.45)/.35);rz=.37-k*.5;fx=-.9+k*.1}else if(ph<.9){rz=-.13;fx=-.8-Math.sin((ph-.8)/.1*Math.PI)*.18}else{const k=(ph-.9)/.1;rz=-.13+k*.18;fx=-.8+k*.25}
+      bu.rA.rotation.set(-.62,0,rz);bu.rF.rotation.x=fx;handCoin.visible=ph>.38&&ph<.86;
+      if(lastPh<.86&&ph>=.86){stackN++;if(stackN>stack.length){stackN=0}stack.forEach((c,k)=>c.visible=k<stackN)}lastPh=ph;
+      const Q=2.7,q=(t%Q)/Q;let la,lf;if(q<.62){la=-.55;lf=-.7}else if(q<.8){const k=(q-.62)/.18;la=-.55-k*.65;lf=-.7-k*.6}else if(q<.86){const k=(q-.8)/.06;la=-1.2+k*.75;lf=-1.3+k*.75}else{la=-.45;lf=-.55}
+      bu.lA.rotation.set(la,0,-.28);bu.lF.rotation.x=lf;if(q>.84&&q<.86&&!ink.visible){ink.visible=true;stamps++}if(q<.1&&ink.visible&&stamps%3===0){ink.visible=false}
+      const lookUp=(t%9)>7.4;bu.head.rotation.x+=((lookUp?-.05:.32)-bu.head.rotation.x)*.08;bu.body.position.y=Math.sin(t*1.4)*.02}
+    people.forEach((p,i)=>{const u=p.userData;const ph=u.phase;if(u.custom){if(i===talking){talkT+=dt;if(talkT>1.2)talking=-1}const tg=(i===hover?(look*.9):0);u.head.rotation.y+=(tg-u.head.rotation.y)*.06;return}u.body.position.y=Math.sin(t*1.6+ph)*.035;
       if(u.cheer){u.rA.rotation.x=u.base.ra+Math.sin(t*4+ph)*.18;u.lA.rotation.x=u.base.la+Math.sin(t*4+ph+1)*.18}else{u.rA.rotation.x=u.base.ra+Math.sin(t*1.6+ph)*.05;u.lA.rotation.x=u.base.la-Math.sin(t*1.6+ph)*.05}
       if(u.coin)u.coin.rotation.z=t*6;
       const target=(look*.9)-p.position.x*.03;u.head.rotation.y+=((i===hover?target*1.3:target*.6)-u.head.rotation.y)*.06;
@@ -239,9 +270,54 @@ function setupNav(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.is
 
 
 /* ============ loading screen ============ */
-function loader(){const L=$('#loader'),f=$('#lfill'),t=$('#lp');let p=0,fonts=false,start=performance.now();document.fonts.ready.then(()=>fonts=true);
-  (function step(){const el=performance.now()-start;const ready=(window.__hallReady&&fonts&&el>1100)||el>6000;const cap=ready?100:(window.__hallReady?88:62);
-    p=Math.min(cap,p+(ready?7:(p<cap?2+Math.random()*3:0)));f.style.width=p+'%';t.textContent=Math.floor(p);
-    if(p>=100){setTimeout(()=>L.classList.add('done'),200)}else setTimeout(step,60)})()}
+function loader(){const L=$('#loader'),f=$('#lfill'),eyes=$('#eyes'),emb=$('#embers');let p=0,fonts=false,start=performance.now();document.fonts.ready.then(()=>fonts=true);
+  const spawnEyes=()=>{const e=document.createElement('div');const sm=Math.random()<.5;e.className='eye'+(sm?' sm':'')+(Math.random()<.2?' gr':'');const side=Math.random();
+    const x=side<.5?(3+Math.random()*25):(72+Math.random()*25),y=10+Math.random()*80;e.style.left=x+'%';e.style.top=y+'%';e.innerHTML='<i></i><i></i>';eyes.appendChild(e);setTimeout(()=>e.remove(),3300)};
+  const spawnEmber=()=>{const e=document.createElement('i');e.className='ember';e.style.left=(Math.random()*100)+'%';e.style.setProperty('--dx',((Math.random()-.5)*120)+'px');e.style.animationDuration=(4+Math.random()*4)+'s';emb.appendChild(e);setTimeout(()=>e.remove(),8200)};
+  spawnEyes();const eT=setInterval(spawnEyes,420),mT=setInterval(spawnEmber,160);
+  (function step(){const el=performance.now()-start;const ready=(window.__hallReady&&fonts&&el>1600)||el>6000;const cap=ready?100:(window.__hallReady?88:62);
+    p=Math.min(cap,p+(ready?5:(p<cap?1.2+Math.random()*2.2:0)));f.style.width=p+'%';
+    if(p>=100){setTimeout(()=>{L.classList.add('done');setTimeout(()=>{clearInterval(eT);clearInterval(mT)},800)},400)}else setTimeout(step,60)})()}
+
+/* ============ wallet + inventory (read-only) ============ */
+const RPCS=['https://solana-rpc.publicnode.com','https://api.mainnet-beta.solana.com'];
+const TK='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',TK22='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
+let W=null;
+async function rpc(method,params){let last;for(const u of RPCS){try{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});if(!r.ok){last=r.status;continue}const j=await r.json();if(j.result!==undefined)return j.result;last=j.error&&j.error.message}catch(e){last=e.message}}throw new Error(last||'rpc')}
+const isMobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+function prov(w){if(w==='phantom')return window.phantom?.solana?.isPhantom?window.phantom.solana:(window.solana?.isPhantom?window.solana:null);if(w==='solflare')return window.solflare?.isSolflare?window.solflare:null;return null}
+const short=a=>a.slice(0,4)+'…'+a.slice(-4);
+function stackFmt(n){if(n>=1e7)return[Math.floor(n/1e6)+'M','gp-g'];if(n>=1e5)return[Math.floor(n/1e3)+'K','gp-w'];if(n>=100)return[Math.floor(n).toLocaleString('en-US'),'gp-y'];if(n>=1)return[(+n.toFixed(2)).toString(),'gp-y'];return[(+n.toPrecision(3)).toString(),'gp-y']}
+async function connectW(w){const p=prov(w);const url=encodeURIComponent(location.href.split('#')[0]),ref=encodeURIComponent(location.origin);
+  if(!p){if(isMobile){location.href=w==='phantom'?`https://phantom.app/ul/browse/${url}?ref=${ref}`:`https://solflare.com/ul/v1/browse/${url}?ref=${ref}`}else{window.open(w==='phantom'?'https://phantom.app/download':'https://solflare.com/download','_blank','noopener');toast(`${w==='phantom'?'Phantom':'Solflare'} not found`,'Install it, then refresh this page.')}return}
+  try{const res=await p.connect();const pk=(res&&res.publicKey)||p.publicKey;if(!pk)throw new Error('no key');W={w,p,addr:pk.toString()};try{localStorage.setItem('bankstr_wallet',w)}catch(e){}
+    $('#wModal').classList.remove('on');onConnected();try{p.on&&p.on('disconnect',()=>disconnectW(true));p.on&&p.on('accountChanged',k=>{if(k){W.addr=k.toString();onConnected()}else disconnectW(true)})}catch(e){}}
+  catch(e){toast('Connection cancelled','Nothing was shared.')}}
+function onConnected(){$('#walletBtn').textContent=short(W.addr);$('#invAddr').textContent=short(W.addr);$('#invWallet').textContent=W.w==='phantom'?'Phantom':'Solflare';$('#inv').classList.add('on');loadInv()}
+async function disconnectW(silent){try{W&&W.p.disconnect&&await W.p.disconnect()}catch(e){}W=null;try{localStorage.removeItem('bankstr_wallet')}catch(e){}$('#walletBtn').textContent='Connect wallet';$('#inv').classList.remove('on');if(!silent)toast('Disconnected')}
+async function tokenMeta(mints){const out={};if(!mints.length)return out;try{const j=await fetch('https://lite-api.jup.ag/tokens/v2/search?query='+mints.slice(0,100).join(',')).then(r=>r.json());(Array.isArray(j)?j:[]).forEach(t=>{out[t.id]={name:t.name,sym:t.symbol,icon:t.icon}})}catch(e){}return out}
+async function loadInv(){const g=$('#invGrid');g.innerHTML='<div class="inv-load">Opening your inventory…</div>';
+  try{const addr=W.addr;const [bal,a,b]=await Promise.all([rpc('getBalance',[addr]),rpc('getTokenAccountsByOwner',[addr,{programId:TK},{encoding:'jsonParsed'}]).catch(()=>({value:[]})),rpc('getTokenAccountsByOwner',[addr,{programId:TK22},{encoding:'jsonParsed'}]).catch(()=>({value:[]}))]);
+    const map={};[...(a.value||[]),...(b.value||[])].forEach(x=>{const i=x.account.data.parsed.info;const amt=i.tokenAmount.uiAmount||0;if(amt>0)map[i.mint]=(map[i.mint]||0)+amt});
+    let toks=Object.entries(map).map(([mint,amt])=>({mint,amt}));const meta=await tokenMeta(toks.map(t=>t.mint));
+    toks.forEach(t=>{const m=meta[t.mint]||{};t.name=m.name||short(t.mint);t.sym=m.sym||'';t.icon=m.icon||'';t.known=!!meta[t.mint]});
+    toks.sort((x,y)=>(y.mint===CONFIG.CA)-(x.mint===CONFIG.CA)||(y.known-x.known)||y.amt-x.amt);
+    const sol=(bal.value||0)/1e9;const items=[{name:'Coins (SOL)',amt:sol,img:'coin.png',pix:1}].concat(toks.map(t=>({name:t.mint===CONFIG.CA?'BANKSTR':(t.sym?`${t.name} ($${t.sym})`:t.name),amt:t.amt,img:t.mint===CONFIG.CA?'chest.png':t.icon,pix:t.mint===CONFIG.CA,fb:t.sym||t.mint.slice(0,4)})));
+    renderInv(items.slice(0,28),items.length)}
+  catch(e){g.innerHTML='<div class="inv-load">Could not reach Solana right now.<br>Hit Refresh in a moment.</div>'}}
+function renderInv(items,total){const g=$('#invGrid');let h='';
+  items.forEach((it,k)=>{const [q,cl]=stackFmt(it.amt);h+=`<div class="islot slot item" data-k="${k}">${it.img?`<img class="${it.pix?'':'logo'}" src="${esc(it.img)}" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'fb',textContent:${JSON.stringify(String(it.fb||'?'))}}))">`:`<span class="fb">${esc(it.fb||'?')}</span>`}<span class="q ${cl}">${q}</span></div>`});
+  for(let k=items.length;k<28;k++)h+='<div class="islot slot"></div>';g.innerHTML=h;
+  $('#invCount').textContent=`${Math.min(total,28)} / 28${total>28?' (+'+(total-28)+')':''}`;
+  $$('#invGrid .item').forEach(el=>{const it=items[+el.dataset.k];el.addEventListener('mouseenter',()=>$('#invHover').innerHTML=`Examine <b>${esc(it.name)}</b>: ${it.amt.toLocaleString('en-US',{maximumFractionDigits:6})}`);el.addEventListener('mouseleave',()=>$('#invHover').innerHTML='&nbsp;')})}
+function setupWallet(){const m=$('#wModal');$('#stPh').textContent=prov('phantom')?'DETECTED':(isMobile?'OPEN APP':'INSTALL');$('#stSf').textContent=prov('solflare')?'DETECTED':(isMobile?'OPEN APP':'INSTALL');
+  $('#walletBtn').addEventListener('click',()=>{if(W){$('#inv').classList.toggle('on')}else{m.classList.add('on')}});
+  $('#wClose').addEventListener('click',()=>m.classList.remove('on'));m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('on')});
+  $$('.wopt').forEach(b=>b.addEventListener('click',()=>connectW(b.dataset.w)));
+  $('#invClose').addEventListener('click',()=>$('#inv').classList.remove('on'));$('#wDisc').addEventListener('click',()=>disconnectW());$('#wRefresh').addEventListener('click',()=>W&&loadInv());
+  addEventListener('keydown',e=>{if(e.key==='Escape')m.classList.remove('on')});
+  // quiet reconnect if the wallet already trusts this site
+  let last=null;try{last=localStorage.getItem('bankstr_wallet')}catch(e){}
+  if(last==='phantom'&&prov('phantom')){prov('phantom').connect({onlyIfTrusted:true}).then(r=>{W={w:'phantom',p:prov('phantom'),addr:r.publicKey.toString()};$('#walletBtn').textContent=short(W.addr);$('#invAddr').textContent=short(W.addr);$('#invWallet').textContent='Phantom';loadInv()}).catch(()=>{})}}
 /* ============ boot ============ */
-loader();setupLinks();setupNav();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);
+loader();setupLinks();setupNav();setupWallet();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);
