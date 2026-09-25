@@ -280,7 +280,7 @@ function loader(){const L=$('#loader'),f=$('#lfill'),eyes=$('#eyes'),emb=$('#emb
     if(p>=100){setTimeout(()=>{L.classList.add('done');setTimeout(()=>{clearInterval(eT);clearInterval(mT)},800)},400)}else setTimeout(step,60)})()}
 
 /* ============ wallet + inventory (read-only) ============ */
-const RPCS=['https://solana-rpc.publicnode.com','https://api.mainnet-beta.solana.com'];
+const RPCS=['/api/rpc','https://solana-rpc.publicnode.com','https://api.mainnet-beta.solana.com'];
 const TK='TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA',TK22='TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb';
 let W=null;
 async function rpc(method,params){let last;for(const u of RPCS){try{const r=await fetch(u,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});if(!r.ok){last=r.status;continue}const j=await r.json();if(j.result!==undefined)return j.result;last=j.error&&j.error.message}catch(e){last=e.message}}throw new Error(last||'rpc')}
