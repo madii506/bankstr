@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BANKSTR</title>
+<meta name="description" content="The RuneScape grail bank. Creator fees buy Bonds, Bonds bank the rarest items in the game. Nothing leaves the bank.">
+<meta property="og:title" content="BANKSTR">
+<meta property="og:description" content="The RuneScape grail bank. Nothing leaves the bank.">
+<meta property="og:image" content="banner.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b0806">
+<link rel="icon" href="favicon.png">
+<link rel="preload" href="pixelify-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="metal-mania-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="wall"></div>
+
+<header id="nav">
+ <a class="brand" href="#top" aria-label="BANKSTR home"><img src="pfp-200.png" alt=""><b>BANKSTR</b></a>
+ <nav class="links" id="links"><a href="#top">Hall</a><a href="#grails">Grails</a><a href="#bank">Bank</a><a href="#how">How</a><a href="#rules">Rules</a><a href="#faq">FAQ</a></nav>
+ <div class="nav-r">
+  <a class="icon-btn" data-x href="#" target="_blank" rel="noopener" aria-label="BANKSTR on X"><svg viewBox="0 0 24 24"><path d="M18.9 2H22l-7.3 8.3L23 22h-6.6l-5.1-6.7L5.4 22H2.3l7.8-8.9L1.5 2h6.8l4.6 6.1L18.9 2Zm-1.2 18h1.8L7.4 3.9H5.5L17.7 20Z"/></svg></a>
+  <a class="btn gold sm" data-buy href="#" target="_blank" rel="noopener">Buy $BANKSTR</a>
+  <button class="burger" id="burger" aria-label="Menu">&#9776;</button>
+ </div>
+</header>
+
+<main>
+<!-- HALL (live 3D) -->
+<section class="hero" id="top">
+ <canvas id="hall" aria-label="The BANKSTR hall"></canvas>
+ <div class="hero-ui">
+  <img class="logo" src="logo.png" alt="BANKSTR">
+  <p class="tag">The RuneScape grail bank. <em>Nothing leaves the bank.</em></p>
+  <div class="hero-b"><a class="btn gold" href="#grails">See the grails</a><a class="btn" href="#bank">Open the bank</a></div>
+ </div>
+ <div class="tip" id="tip"></div>
+ <div class="hint" id="hint">Click anyone in the hall to talk</div>
+ <div class="dlg" id="dlg" role="dialog" aria-live="polite">
+  <div class="dlg-in"><b id="dlgName"></b><p id="dlgText"></p><button id="dlgNext">Click here to continue</button></div>
+ </div>
+</section>
+
+<!-- GRAILS -->
+<section class="sec" id="grails">
+ <div class="head reveal">
+  <span class="eyebrow"><img src="coin.png" alt="">THE GRAILS</span>
+  <h2 class="h2">Three grails. One at a time.</h2>
+  <p class="lead">The rarest items in Old School. We bank them cheapest first, and prices come straight from the Grand Exchange.</p>
+ </div>
+ <div class="rs target reveal">
+  <div class="t-ic slot"><img id="tIcon" src="grail-shadow.png" alt=""></div>
+  <div class="t-main">
+   <span class="t-lbl">NOW SAVING FOR</span>
+   <b class="t-name" id="tName">Tumeken's shadow</b>
+   <div class="meter"><i id="tFill"></i><em id="tPct">0% funded</em></div>
+   <div class="t-row"><span id="tHave">0 GP in the bank</span><span id="tNeed">…</span></div>
+  </div>
+  <div class="t-side"><span class="t-lbl">WHOLE SET</span><b id="setGp">…</b><span id="setUsd">…</span></div>
+ </div>
+ <div class="grails" id="grailCards"></div>
+ <p class="note reveal"><span class="live"><span class="dot" id="geDot"></span><span id="geStatus">Connecting to the Grand Exchange…</span></span></p>
+</section>
+
+<!-- BANK -->
+<section class="sec" id="bank">
+ <div class="head reveal">
+  <span class="eyebrow"><img src="coin.png" alt="">THE BANK</span>
+  <h2 class="h2">Everything lands here.</h2>
+  <p class="lead">One public bank. Every grail goes in, nothing comes out.</p>
+ </div>
+ <div class="bank-wrap reveal">
+  <div class="rs bank" id="bankPanel">
+   <div class="rs-title"><span class="l" id="bankCount">0 / 3</span>The Bank of BANKSTR</div>
+   <div class="bank-body">
+    <div class="bank-grid" id="bankGrid"></div>
+    <div class="bank-foot"><span>Bank value: <b id="bankValue">0 GP</b></span><span>Grails: <b id="bankGrails">0 / 3</b></span></div>
+   </div>
+   <div class="pin" id="pin">
+    <p class="pin-t">Bank of BANKSTR</p>
+    <p class="pin-s" id="pinMsg">Please enter your PIN using the buttons below.</p>
+    <div class="pin-dots" id="pinDots"><i></i><i></i><i></i><i></i></div>
+    <div class="pin-pad" id="pinPad"></div>
+    <button class="pin-x" id="pinSkip">I don't know it.</button>
+   </div>
+  </div>
+  <div class="side">
+   <div class="rs log">
+    <div class="rs-title">Deposit log</div>
+    <div class="log-body" id="logBody"></div>
+    <div class="log-foot"><button class="btn sm" id="csvBtn">Export log</button></div>
+   </div>
+   <div class="rs wallet">
+    <div class="rs-title">Bank wallet</div>
+    <div class="w-addr" id="wAddr">Goes live at launch.</div>
+    <div class="w-btns"><button class="btn sm" id="wCopy">Copy</button><a class="btn sm" id="wScan" href="#" target="_blank" rel="noopener">Solscan ↗</a></div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- HOW -->
+<section class="sec" id="how">
+ <div class="head reveal">
+  <span class="eyebrow"><img src="coin.png" alt="">HOW IT WORKS</span>
+  <h2 class="h2">Four steps. On repeat.</h2>
+ </div>
+ <div class="steps reveal">
+  <div class="step rs"><span class="n">1</span><img src="coin.png" alt=""><b>Fees come in</b><p>Every trade pays a small creator fee into the bank wallet.</p></div>
+  <div class="arrow">➜</div>
+  <div class="step rs"><span class="n">2</span><img src="bond.png" alt=""><b>Fees buy Bonds</b><p>Old School Bonds, from the official store. The route the game allows.</p></div>
+  <div class="arrow">➜</div>
+  <div class="step rs"><span class="n">3</span><img src="grail-scythe.png" alt=""><b>Bonds buy grails</b><p>Sold on the Grand Exchange, then straight into the next grail.</p></div>
+  <div class="arrow">➜</div>
+  <div class="step rs"><span class="n">4</span><img src="scroll.png" alt=""><b>Into the bank</b><p>Banked for good, with a screenshot on the deposit log.</p></div>
+ </div>
+</section>
+
+<!-- RULES -->
+<section class="sec" id="rules">
+ <div class="head reveal">
+  <span class="eyebrow"><img src="coin.png" alt="">HOUSE RULES</span>
+  <h2 class="h2">Rules of the bank.</h2>
+ </div>
+ <div class="rules reveal">
+  <div class="rule rs"><img src="bond.png" alt=""><b>Bonds only</b><p>No gold sellers. No shortcuts. Ever.</p></div>
+  <div class="rule rs"><img src="grail-bow.png" alt=""><b>Nothing leaves</b><p>Grails stay in the bank. Never sold for holders, never handed out.</p></div>
+  <div class="rule rs"><img src="scroll.png" alt=""><b>Every drop logged</b><p>Receipts and screenshots for every deposit.</p></div>
+  <div class="rule rs"><img src="star.png" alt=""><b>A collection, not a claim</b><p>The bank doesn't back the token. It's the quest.</p></div>
+ </div>
+</section>
+
+<!-- FAQ -->
+<section class="sec" id="faq">
+ <div class="head reveal">
+  <span class="eyebrow"><img src="coin.png" alt="">FAQ</span>
+  <h2 class="h2">Ask the Banker.</h2>
+  <p class="lead">Pick an option, or press 1–6.</p>
+ </div>
+ <div class="rs npc reveal">
+  <div class="npc-p"><img src="pfp-200.png" alt=""><b>The Banker</b></div>
+  <div class="npc-b" id="npc"></div>
+ </div>
+</section>
+</main>
+
+<footer>
+ <img class="f-logo" src="logo-sm.png" alt="BANKSTR">
+ <p class="f-tag">Nothing leaves the bank.</p>
+ <div class="f-links"><a href="#grails">Grails</a><a href="#bank">Bank</a><a href="#how">How</a><a href="#" data-x target="_blank" rel="noopener">X ↗</a><a href="#top">Top ↑</a></div>
+ <p class="disc">BANKSTR is an unofficial community collecting project. Not affiliated with or endorsed by Jagex. RuneScape and Old School RuneScape are trademarks of Jagex Ltd. All artwork here is original. Prices from the OSRS Wiki real-time prices API. The bank is a collection: it doesn't back the token, can't be redeemed and is never handed out. Not financial advice.</p>
+</footer>
+
+<div id="toast"></div>
+<script type="module" src="app.js"></script>
+</body>
+</html>
