@@ -62,7 +62,7 @@ img{display:block}
 /* hero */
 .hero{position:relative;height:100svh;min-height:640px;overflow:hidden;background:#0b0806}
 #hall{position:absolute;inset:0;width:100%;height:100%;display:block;outline:none}
-.hero-ui{position:absolute;left:0;right:0;top:clamp(78px,11vh,120px);display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none;z-index:2}
+.hero-ui{position:absolute;left:0;right:0;top:44%;transform:translateY(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;pointer-events:none;z-index:2}
 .hero-ui .logo{width:min(640px,86vw);filter:drop-shadow(0 0 40px rgba(255,120,30,.25));animation:flick 3s infinite}
 @keyframes flick{0%,100%{filter:drop-shadow(0 0 40px rgba(255,120,30,.25)) brightness(1)}45%{filter:drop-shadow(0 0 48px rgba(255,140,40,.35)) brightness(1.06)}55%{filter:drop-shadow(0 0 36px rgba(255,120,30,.22)) brightness(.97)}}
 .tag{margin-top:4px;font-size:clamp(17px,2vw,21px);color:var(--cream);text-shadow:2px 2px 0 #000}
@@ -210,5 +210,16 @@ footer{margin-top:120px;padding:56px 20px 70px;text-align:center;border-top:2px 
  .sec{padding-top:90px}
  .t-name{font-size:28px}
  .pin-pad{grid-template-columns:repeat(5,46px)}
+ .hint{font-size:9px;letter-spacing:.08em}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+
+/* loading screen */
+#loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;background:#070504 url(wall.png) center/900px;image-rendering:pixelated;transition:opacity .5s,visibility .5s}
+#loader::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(255,120,30,.14),rgba(0,0,0,.86) 60%)}
+#loader.done{opacity:0;visibility:hidden}
+.ld{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px;padding:20px}
+.ld img{width:min(560px,82vw);image-rendering:auto;animation:flick 2.4s infinite}
+.lbar{position:relative;width:360px;max-width:80vw;height:34px;border:1px solid #8C1111;background:#000;padding:2px}
+.lbar i{display:block;height:100%;width:0;background:#8C1111;transition:width .12s linear}
+.lbar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;font:15px Pix;color:#fff;text-shadow:1px 1px 0 #000}

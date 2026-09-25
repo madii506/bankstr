@@ -105,7 +105,7 @@ const CAST=[
   {name:'Old Grinder',o:{top:0x6B4A2A,top2:0x4E3620,leg:0x3E5A2A,hat:'party',hatc:0xD83030,rh:'pick',ra:[-.9,.25],rf:[-.9,0],belt:0x2a1a0c},lines:['Back in my day we grinded for grails.','Now the fees do the grinding. Kids these days.']}
 ];
 
-function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'})}catch(e){cv.style.background='url(banner.jpg) center/cover';return}
+function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'})}catch(e){cv.style.background='url(banner.jpg) center/cover';window.__hallReady=true;return}
   R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.setClearColor(0x0b0806);
   const S=new THREE.Scene();S.fog=new THREE.Fog(0x0b0806,30,60);
   const cam=new THREE.PerspectiveCamera(35,1,.1,200);
@@ -170,7 +170,7 @@ function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:
       const target=(look*.9)-p.position.x*.03;u.head.rotation.y+=((i===hover?target*1.3:target*.6)-u.head.rotation.y)*.06;
       const lift=(i===hover)?.12:0;if(i===talking){talkT+=dt;const j=Math.max(0,Math.sin(Math.min(1,talkT*2.2)*Math.PI))*.55;p.position.y=j;u.rA.rotation.x=u.base.ra-1.6*Math.max(0,Math.sin(Math.min(1,talkT*1.2)*Math.PI));if(talkT>1.2)talking=-1}else p.position.y+=(lift-p.position.y)*.2;
       p.rotation.y+=((i===hover||i===cur?-p.position.x*.01:u.ry)-p.rotation.y)*.08});
-    R.render(S,cam)})();
+    R.render(S,cam);window.__hallReady=true})();
 }
 
 /* ============ grails + GE ============ */
@@ -237,5 +237,11 @@ function setupNav(){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.is
   const rv=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');rv.unobserve(e.target)}}),{threshold:.08});$$('.reveal').forEach(el=>rv.observe(el));
   addEventListener('resize',()=>GRAILS.forEach(drawChart))}
 
+
+/* ============ loading screen ============ */
+function loader(){const L=$('#loader'),f=$('#lfill'),t=$('#lp');let p=0,fonts=false,start=performance.now();document.fonts.ready.then(()=>fonts=true);
+  (function step(){const el=performance.now()-start;const ready=(window.__hallReady&&fonts&&el>1100)||el>6000;const cap=ready?100:(window.__hallReady?88:62);
+    p=Math.min(cap,p+(ready?7:(p<cap?2+Math.random()*3:0)));f.style.width=p+'%';t.textContent=Math.floor(p);
+    if(p>=100){setTimeout(()=>L.classList.add('done'),200)}else setTimeout(step,60)})()}
 /* ============ boot ============ */
-setupLinks();setupNav();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);
+loader();setupLinks();setupNav();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);

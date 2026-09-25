@@ -17,6 +17,12 @@
 </head>
 <body>
 <div class="wall"></div>
+<div id="loader" role="status" aria-label="Loading">
+ <div class="ld">
+  <img src="logo.png" alt="BANKSTR">
+  <div class="lbar"><i id="lfill"></i><span>Loading BANKSTR -&nbsp;<b id="lp">0</b>%</span></div>
+ </div>
+</div>
 
 <header id="nav">
  <a class="brand" href="#top" aria-label="BANKSTR home"><img src="pfp-200.png" alt=""><b>BANKSTR</b></a>
@@ -33,8 +39,6 @@
 <section class="hero" id="top">
  <canvas id="hall" aria-label="The BANKSTR hall"></canvas>
  <div class="hero-ui">
-  <img class="logo" src="logo.png" alt="BANKSTR">
-  <p class="tag">The RuneScape grail bank. <em>Nothing leaves the bank.</em></p>
   <div class="hero-b"><a class="btn gold" href="#grails">See the grails</a><a class="btn" href="#bank">Open the bank</a></div>
  </div>
  <div class="tip" id="tip"></div>
