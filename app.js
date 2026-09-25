@@ -16,9 +16,9 @@ const LOG = [];
 
 const CAP = 2147483647, BOND_ID = 13190;
 const GRAILS = [
-  {id:27277,name:"Tumeken's shadow",short:'Shadow',icon:'grail-shadow.png',wiki:"Tumeken%27s_shadow",snap:[787555000,788000000]},
-  {id:22486,name:'Scythe of Vitur',short:'Scythe',icon:'grail-scythe.png',wiki:'Scythe_of_vitur',snap:[1188585000,1195770219]},
-  {id:20997,name:'Twisted bow',short:'Twisted bow',icon:'grail-bow.png',wiki:'Twisted_bow',snap:[1388000000,1389847927]}
+  {id:27277,beam:'rgba(170,90,255,.9)',name:"Tumeken's shadow",short:'Shadow',icon:'grail-shadow.png',wiki:"Tumeken%27s_shadow",snap:[787555000,788000000]},
+  {id:22486,beam:'rgba(255,60,70,.9)',name:'Scythe of Vitur',short:'Scythe',icon:'grail-scythe.png',wiki:'Scythe_of_vitur',snap:[1188585000,1195770219]},
+  {id:20997,beam:'rgba(120,255,90,.9)',name:'Twisted bow',short:'Twisted bow',icon:'grail-bow.png',wiki:'Twisted_bow',snap:[1388000000,1389847927]}
 ];
 
 /* ============ helpers ============ */
@@ -160,6 +160,13 @@ function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:
   const handCoin=new THREE.Mesh(coinG,coinM);handCoin.position.set(0,-.78,.05);handCoin.rotation.x=.3;bu.rF.add(handCoin);
   const stamp=new THREE.Group();stamp.position.y=-.8;bu.lF.add(stamp);const sh=new THREE.Mesh(new THREE.CylinderGeometry(.05,.05,.26,6),M(0x6B4520));sh.position.y=.08;stamp.add(sh);const sb=box(.2,.08,.16,M(0x8a1a1a));sb.position.y=-.08;stamp.add(sb);
   let stackN=0,lastPh=0,stamps=0;
+  // ---- overhead chat (RS style) ----
+  const OHL={'Sir Vault':['Halt!','Nothing leaves.','On guard'],'Robin Bank':['Shadow first!','Tbow soon','Pew pew'],'The Bankster':['Nice bank','Bank value up?','Deposit all'],'Party Penny':['Gz!!','Drop party?','Gz gz gz'],'Mr. Fees':['Fees in','Buying Bonds','Every trade counts'],'Mr. Bond':['Bonds only','Official route','Shaken, not sold'],'Merchant Mo':['Prices live','GE says 794M','Buying grails'],'The Exchange Wizard':['I see purple','Cheapest first','Magic'],'The Enforcer':['Rules are rules','No gold sellers','Behave'],'Old Grinder':['Back in my day','99 soon','Lvl 3 btw'],'The Banker':['Next!','Counting…','Nothing leaves the bank']};
+  const ohBox=$('#oh');const ohs=[];const v3=new THREE.Vector3();
+  const say=()=>{if(document.hidden)return;const i=(Math.random()*people.length)|0;if(i===talking||ohs.some(o=>o.i===i))return;const lines=OHL[CAST[i].name]||['Gz'];const t=lines[(Math.random()*lines.length)|0];
+    const el=document.createElement('div');const fx=Math.random();el.className='ohc'+(fx<.25?' g1':fx<.45?' wv':'');el.innerHTML=fx>=.25&&fx<.45?[...t].map((ch,k)=>`<span style="animation-delay:${k*.06}s">${ch===' '?'&nbsp;':esc(ch)}</span>`).join(''):esc(t);ohBox.appendChild(el);const o={i,el,until:performance.now()+3000};ohs.push(o)};
+  setInterval(say,1700);
+  const placeOh=()=>{const now=performance.now();const w=cv.clientWidth,h=cv.clientHeight;for(let k=ohs.length-1;k>=0;k--){const o=ohs[k];if(now>o.until){o.el.remove();ohs.splice(k,1);continue}const p=people[o.i];v3.set(p.position.x,(CAST[o.i].banker?5.2:4.75)+p.position.y,p.position.z).project(cam);o.el.style.left=((v3.x+1)/2*w)+'px';o.el.style.top=((1-v3.y)/2*h)+'px'}};
   // fit camera
   const fit=()=>{const w=cv.clientWidth,h=cv.clientHeight;R.setSize(w,h,false);const asp=w/h;cam.aspect=asp;
     const narrow=asp<1;const span=narrow?11:28,d=24;const hf=2*Math.atan(span/2/d);const vf=2*Math.atan(Math.tan(hf/2)/asp);cam.fov=THREE.MathUtils.radToDeg(vf);
@@ -198,14 +205,14 @@ function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:
       const target=(look*.9)-p.position.x*.03;u.head.rotation.y+=((i===hover?target*1.3:target*.6)-u.head.rotation.y)*.06;
       const lift=(i===hover)?.12:0;if(i===talking){talkT+=dt;const j=Math.max(0,Math.sin(Math.min(1,talkT*2.2)*Math.PI))*.55;p.position.y=j;u.rA.rotation.x=u.base.ra-1.6*Math.max(0,Math.sin(Math.min(1,talkT*1.2)*Math.PI));if(talkT>1.2)talking=-1}else p.position.y+=(lift-p.position.y)*.2;
       p.rotation.y+=((i===hover||i===cur?-p.position.x*.01:u.ry)-p.rotation.y)*.08});
-    R.render(S,cam);window.__hallReady=true})();
+    placeOh();R.render(S,cam);window.__hallReady=true})();
 }
 
 /* ============ grails + GE ============ */
 function renderGrails(){const q=queue(),upg=usdPerGp(),cur=current();
   const box=$('#grailCards');box.innerHTML=q.map((g,i)=>{const p=priceOf(g),raw=S.prices[g.id]||{},own=S.owned.has(g.id),t=Math.max(raw.highTime||0,raw.lowTime||0);
-    return `<article class="rs gcard reveal in ${cur===g?'cur':''}"><div class="g-top"><div class="g-slot slot"><img src="${g.icon}" alt=""></div><div><div class="g-q">GRAIL #${i+1}</div><div class="g-name">${esc(g.name)}</div><div class="g-st ${own?'st-yes':cur===g?'st-next':'st-no'}">${own?'In the bank':cur===g?'Saving for this now':'Up next'}</div></div></div>
-     <div class="g-price"><b class="${own?'':''}">${fmtGp(p.high)}</b><span>≈ ${fmtUsd(p.high*upg)}</span></div>
+    return `<article class="rs gcard tilt reveal in ${cur===g?'cur':''}"><div class="g-top"><div class="g-slot slot" style="--beam:${g.beam}"><img src="${g.icon}" alt=""></div><div><div class="g-q">GRAIL #${i+1}</div><div class="g-name">${esc(g.name)}</div><div class="g-st ${own?'st-yes':cur===g?'st-next':'st-no'}">${own?'In the bank':cur===g?'Saving for this now':'Up next'}</div></div></div>
+     <div class="g-price"><b>${fmtGp(p.high)}${S.prev&&S.prev[g.id]&&S.prev[g.id]!==p.high?`<span class="chg ${p.high>S.prev[g.id]?'up':'dn'}">${p.high>S.prev[g.id]?'▲':'▼'}</span>`:''}</b><span>≈ ${fmtUsd(p.high*upg)}</span></div>
      <div class="g-chart"><i id="gl${g.id}">PRICE · 90 DAYS</i><canvas id="gc${g.id}"></canvas></div>
      <div class="g-links"><span>${p.snap?'snapshot':'last trade '+ago(t)}</span><a href="https://prices.runescape.wiki/osrs/item/${g.id}" target="_blank" rel="noopener">Price history ↗</a></div></article>`}).join('');
   q.forEach(g=>{drawChart(g);loadSeries(g)});
@@ -224,7 +231,7 @@ function drawChart(g){const c=document.getElementById('gc'+g.id),L=document.getE
   const chg=(vs[vs.length-1]-vs[0])/vs[0]*100;L.textContent=`90D · ${chg>=0?'+':''}${chg.toFixed(1)}%`}
 function geStatus(){const el=$('#geStatus');if(S.live){el.textContent=`Live from the Grand Exchange · updated ${ago(S.updated/1000)}`;$('#geDot').classList.add('live')}else{el.textContent=S.updated?'Offline · showing the 25 Sep snapshot':'Connecting to the Grand Exchange…';$('#geDot').classList.remove('live')}}
 async function fetchPrices(){try{const ids=[...GRAILS.map(g=>g.id),BOND_ID];const res=await Promise.all(ids.map(id=>fetch(`https://prices.runescape.wiki/api/v1/osrs/latest?id=${id}`).then(r=>r.json())));
-    res.forEach(j=>Object.entries(j.data||{}).forEach(([id,v])=>{if(+id===BOND_ID){if(v.high)S.bondGp=v.high}else S.prices[id]=v}));S.live=true;S.updated=Date.now()}catch(e){S.live=false;S.updated=S.updated||Date.now()}
+    S.prev=Object.fromEntries(Object.entries(S.prices).map(([k,v])=>[k,v.high]));res.forEach(j=>Object.entries(j.data||{}).forEach(([id,v])=>{if(+id===BOND_ID){if(v.high)S.bondGp=v.high}else S.prices[id]=v}));S.live=true;S.updated=Date.now()}catch(e){S.live=false;S.updated=S.updated||Date.now()}
   renderGrails();geStatus()}
 
 /* ============ bank ============ */
@@ -316,5 +323,12 @@ function setupWallet(){const m=$('#wModal');$('#stPh').textContent=prov('phantom
   // quiet reconnect if the wallet already trusts this site
   let last=null;try{last=localStorage.getItem('bankstr_wallet')}catch(e){}
   if(last==='phantom'&&prov('phantom')){prov('phantom').connect({onlyIfTrusted:true}).then(r=>{W={w:'phantom',p:prov('phantom'),addr:r.publicKey.toString()};$('#walletBtn').textContent=short(W.addr);$('#invAddr').textContent=short(W.addr);$('#invWallet').textContent='Phantom';loadInv()}).catch(()=>{})}}
+
+/* ============ ambient embers + card tilt ============ */
+function ambient(){const c=$('#amb');if(!c)return;const g=c.getContext('2d');let W,H;const P=[];const size=()=>{W=c.width=innerWidth;H=c.height=innerHeight};size();addEventListener('resize',size);
+  for(let i=0;i<46;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,v:.15+Math.random()*.45,s:1+Math.random()*2,a:Math.random(),d:Math.random()*6});
+  (function f(){requestAnimationFrame(f);if(document.hidden)return;g.clearRect(0,0,W,H);const t=performance.now()/1000;
+    for(const p of P){p.y-=p.v;p.x+=Math.sin(t+p.d)*.25;if(p.y<-10){p.y=H+10;p.x=Math.random()*W}const al=.25+.35*Math.abs(Math.sin(t*1.3+p.d));g.fillStyle=`rgba(255,${140+((p.d*20)|0)},60,${al})`;g.fillRect(p.x|0,p.y|0,p.s,p.s)}})()}
+function tilt(){document.addEventListener('pointermove',e=>{const el=e.target.closest&&e.target.closest('.tilt,.step,.rule');$$('.tilt,.step,.rule').forEach(x=>{if(x!==el)x.style.transform=''});if(!el||matchMedia('(pointer:coarse)').matches)return;const r=el.getBoundingClientRect();const dx=(e.clientX-r.left)/r.width-.5,dy=(e.clientY-r.top)/r.height-.5;el.style.transform=`perspective(800px) rotateX(${(-dy*6).toFixed(2)}deg) rotateY(${(dx*8).toFixed(2)}deg) translateY(-3px)`})}
 /* ============ boot ============ */
-loader();setupLinks();setupNav();setupWallet();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);
+loader();setupLinks();setupNav();setupWallet();ambient();tilt();renderGrails();geStatus();setupPin();setupLog();setupFaq();hall();fetchPrices();setInterval(fetchPrices,60000);setInterval(geStatus,5000);
