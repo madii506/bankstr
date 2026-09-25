@@ -109,15 +109,12 @@ const CAST=[
   {name:'Old Grinder',o:{top:0x6B4A2A,top2:0x4E3620,leg:0x3E5A2A,hat:'party',hatc:0xD83030,rh:'pick',ra:[-.9,.25],rf:[-.9,0],belt:0x2a1a0c},lines:['Back in my day we grinded for grails.','Now the fees do the grinding. Kids these days.']}
 ];
 
-function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:false,powerPreference:'high-performance'})}catch(e){cv.style.background='url(banner.jpg) center/cover';window.__hallReady=true;return}
-  R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.setClearColor(0x0b0806);
-  const S=new THREE.Scene();S.fog=new THREE.Fog(0x0b0806,30,60);
+function hall(){const cv=$('#hall');let R;try{R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true,premultipliedAlpha:false,powerPreference:'high-performance'})}catch(e){cv.style.background='url(banner.jpg) center/cover';window.__hallReady=true;return}
+  R.setPixelRatio(Math.min(1.5,devicePixelRatio||1));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.setClearColor(0x000000,0);
+  const S=new THREE.Scene();
   const cam=new THREE.PerspectiveCamera(35,1,.1,200);
   // wall + floor
-  const wt=new THREE.CanvasTexture(cobbleCanvas(256,256,9,13));wt.wrapS=wt.wrapT=THREE.RepeatWrapping;wt.repeat.set(9,4);wt.magFilter=THREE.NearestFilter;wt.colorSpace=THREE.SRGBColorSpace;
-  const wall=new THREE.Mesh(new THREE.PlaneGeometry(90,40),new THREE.MeshLambertMaterial({map:wt,color:0x8a7a68}));wall.position.set(0,14,-6);wall.receiveShadow=true;S.add(wall);
-  const ft=new THREE.CanvasTexture(cobbleCanvas(256,256,31,14,[50,44,38]));ft.wrapS=ft.wrapT=THREE.RepeatWrapping;ft.repeat.set(10,3);ft.magFilter=THREE.NearestFilter;ft.colorSpace=THREE.SRGBColorSpace;
-  const floor=new THREE.Mesh(new THREE.PlaneGeometry(90,30),new THREE.MeshLambertMaterial({map:ft,color:0x9a8a78}));floor.rotation.x=-Math.PI/2;floor.position.set(0,0,8);floor.receiveShadow=true;S.add(floor);
+  const floor=new THREE.Mesh(new THREE.PlaneGeometry(90,30),new THREE.ShadowMaterial({opacity:.5}));floor.rotation.x=-Math.PI/2;floor.position.set(0,0,8);floor.receiveShadow=true;S.add(floor);
   // lights
   S.add(new THREE.AmbientLight(0x6a5a50,.95));
   const k1=new THREE.DirectionalLight(0xffb070,1.7);k1.position.set(-9,9,9);k1.castShadow=true;k1.shadow.mapSize.set(2048,2048);Object.assign(k1.shadow.camera,{left:-20,right:20,top:14,bottom:-8,near:1,far:50});S.add(k1);
